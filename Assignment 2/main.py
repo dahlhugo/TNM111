@@ -2,8 +2,8 @@ import tkinter as tk
 import pandas as pd
 import numpy as np
 
-canvas_width = canvas_height = 400
-
+canvas_width = canvas_height = 500
+canvas_padding = 7
 
 x_axis_start = (0, canvas_height/2)
 x_axis_end = (canvas_width, canvas_height/2)
@@ -24,18 +24,8 @@ output_y = np.array(np.interp(y_values, [min(y_values), max(y_values)], [canvas_
 print(output_y.astype(int))
 
 
-def get_color(value):
-    match value:
-        case "a":
-            return "#ff0000"
-        case "b":
-            return "#00ff00"
-        case "c":
-            return "#0000ff"
-        case _:
-            return "fff"
-
 def create_shape(canvas: tk.Canvas, x: int, y: int, r: float, type_value: str):
+    x = canvas_padding + x
     match type_value:
         case 'a':
             canvas.create_oval(x - r, y - r, x + r, y + r, fill="black", outline=None)
@@ -47,14 +37,14 @@ def create_shape(canvas: tk.Canvas, x: int, y: int, r: float, type_value: str):
             canvas.create_polygon([x, y + r + 0.5, x - r - 0.5, y - r - 0.5, x + r + 0.5, y - r - 0.5], fill="black", outline=None)
 
 
-
+#Create window
 window = tk.Tk()
 window.geometry("500x500")
 
 canvas = tk.Canvas()
 canvas.configure(width=canvas_width, height=canvas_height, background="grey")
-canvas.create_line(0, 200, 400, 200)
-canvas.create_line(200, 0, 200, 400)
+canvas.create_line(0, canvas_height/2, canvas_width, canvas_height/2)
+canvas.create_line(canvas_width/2, 0, canvas_width/2, canvas_height)
 
 # Create circles for every point and sets color according to type 'a', 'b' or 'c'
 for i in range(len(output_x) - 1):
@@ -62,31 +52,35 @@ for i in range(len(output_x) - 1):
     
 # create ticks on the x-axis
 
-for i in range(canvas_width):
-    if i == 0:
-        continue
+# for i in range(canvas_width):
+#     if i == 0:
+#         continue
 
-    if i % 40 == 0:
-        canvas.create_text(i, canvas_height/2 + 10, text=str(round(np.interp(i, [0, canvas_width], [min(x_values), max(x_values)]))))
+#     if i % 40 == 0:
+#         canvas.create_text(i, canvas_height/2 + 10, text=str(round(np.interp(i, [0, canvas_width], [min(x_values), max(x_values)]))))
 
-    if i % 20 == 0:        
-        canvas.create_line(i, canvas_height/2 - 4, i, canvas_height/2 + 4)
 
-# create ticks on the y-axis
-for i in range(canvas_height):
-    if i == 0:
-        continue
+#     if i % 20 == 0:        
+#         canvas.create_line(i, canvas_height/2 - 4, i, canvas_height/2 + 4)
 
-    if i % 40 == 0:
-        canvas.create_text(canvas_width/2 + 12, i, text=str(round(np.interp(i, [0, canvas_height], [max(y_values), min(y_values)]))))
+# # create ticks on the y-axis
+# for i in range(canvas_height):
+#     if i == 0:
+#         continue
+
+#     if i % 40 == 0:
+#         canvas.create_text(canvas_width/2 + 12, i, text=str(round(np.interp(i, [0, canvas_height], [max(y_values), min(y_values)]))))
    
-    if i % 20 == 0:
-        canvas.create_line(canvas_width/2 - 4, i, canvas_width/2 + 4, i)
-
-
-
+#     if i % 20 == 0:
+#         canvas.create_line(canvas_width/2 - 4, i, canvas_width/2 + 4, i)
+    
+for i in range(min(x_values), max(x_values)):
+    if i % 10 == 0:
+        canvas.create_line(round(np.interp(i, [min(x_values), max(x_values)], [0, canvas_width])) + canvas_padding, canvas_height/2 - 2, round(np.interp(i, [min(x_values), max(x_values)], [0, canvas_width])) + canvas_padding, canvas_height/2 + 3)
+        canvas.create_text(round(np.interp(i, [min(x_values), max(x_values)], [0, canvas_width])) + canvas_padding, canvas_height/2 + 10, text=str(i))
 
 canvas.place(relx=0.5, rely=0.5, anchor="center")
+#start mainloop
 window.mainloop()
 
 
