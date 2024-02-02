@@ -25,10 +25,55 @@ output_y = np.array(
     np.interp(y_values, [min(y_values), max(y_values)], [canvas_height, 0]))
 print(output_y.astype(int))
 
-def onItemClick(event, x, y):
-   print(x, y)
-  
 
+def draw(x_values, y_values):
+    # Create circles for every point and sets color according to type 'a', 'b' or 'c'
+    for i in range(len(output_x) - 1):
+        create_shape(canvas, output_x[i], output_y[i], 3, type_values[i])
+
+    for i in range(len(x_values)):
+        if i % 10 == 0:
+            canvas.create_line(round(np.interp(i, [min(x_values), max(x_values)], [0, canvas_width])) + canvas_padding, canvas_height/2 - 2, round(
+                np.interp(i, [min(x_values), max(x_values)], [0, canvas_width])) + canvas_padding, canvas_height/2 + 3)
+            canvas.create_text(round(np.interp(i, [min(x_values), max(x_values)], [
+                            0, canvas_width])) + canvas_padding, canvas_height/2 + 10, text=str(i))
+
+    for i in range(len(y_values)):
+        if i % 10 == 0:
+            canvas.create_line(canvas_width/2 - 2, round(np.interp(i, [min(y_values), max(y_values)], [0, canvas_height])) + canvas_padding,
+                            canvas_width/2 + 3, round(np.interp(i, [min(y_values), max(y_values)], [0, canvas_height])) + canvas_padding)
+            canvas.create_text(canvas_width/2 + 10, round(np.interp(
+                i, [min(y_values), max(y_values)], [canvas_height, 0])) + 3, text=str(i))
+
+    canvas.place(relx=0.5, rely=0.5, anchor="center")
+
+def redraw(x_values, y_values):
+    canvas.delete('all')
+    draw(x_values, y_values)
+    canvas.pack()
+
+
+def onItemClick(event, center_x, center_y):
+    new_x_values = []
+    new_y_values = []
+
+    for x in x_values: 
+       for y in y_values:
+           if x > center_x and y > center_y:
+               new_x_values.append(x + center_x)
+               new_y_values.append(y + center_y)
+           elif x < center_x and y > center_y:
+               new_x_values.append(x - center_x)
+               new_y_values.append(y + center_y)
+           elif x < center_x and y < center_y:
+               new_x_values.append(x - center_x)
+               new_y_values.append(y - center_y)
+           else:
+               new_x_values.append(x + center_x)
+               new_y_values.append(y - center_y)
+    redraw(new_x_values, new_y_values)
+                  
+               
 
  
 
@@ -76,9 +121,7 @@ canvas.configure(width=canvas_width, height=canvas_height, background="grey")
 canvas.create_line(0, canvas_height/2, canvas_width, canvas_height/2)
 canvas.create_line(canvas_width/2, 0, canvas_width/2, canvas_height)
 
-# Create circles for every point and sets color according to type 'a', 'b' or 'c'
-for i in range(len(output_x) - 1):
-    create_shape(canvas, output_x[i], output_y[i], 3, type_values[i])
+
 
 # create ticks on the x-axis
 
@@ -104,20 +147,7 @@ for i in range(len(output_x) - 1):
 #     if i % 20 == 0:
 #         canvas.create_line(canvas_width/2 - 4, i, canvas_width/2 + 4, i)
 
-for i in range(len(x_values)):
-    if i % 10 == 0:
-        canvas.create_line(round(np.interp(i, [min(x_values), max(x_values)], [0, canvas_width])) + canvas_padding, canvas_height/2 - 2, round(
-            np.interp(i, [min(x_values), max(x_values)], [0, canvas_width])) + canvas_padding, canvas_height/2 + 3)
-        canvas.create_text(round(np.interp(i, [min(x_values), max(x_values)], [
-                           0, canvas_width])) + canvas_padding, canvas_height/2 + 10, text=str(i))
 
-for i in range(len(y_values)):
-    if i % 10 == 0:
-        canvas.create_line(canvas_width/2 - 2, round(np.interp(i, [min(y_values), max(y_values)], [0, canvas_height])) + canvas_padding,
-                           canvas_width/2 + 3, round(np.interp(i, [min(y_values), max(y_values)], [0, canvas_height])) + canvas_padding)
-        canvas.create_text(canvas_width/2 + 10, round(np.interp(
-            i, [min(y_values), max(y_values)], [canvas_height, 0])) + 3, text=str(i))
-
-canvas.place(relx=0.5, rely=0.5, anchor="center")
+draw(x_values, y_values)
 # start mainloop
 window.mainloop()
