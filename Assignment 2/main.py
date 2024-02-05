@@ -11,7 +11,7 @@ x_axis_end = (canvas_width, canvas_height/2)
 y_axis_start = (canvas_width/2, 0)
 y_axis_end = (canvas_width/2, canvas_height)
 
-data = pd.read_csv('data2.csv', header=None)
+data = pd.read_csv('./Assignment 2/data2.csv', header=None)
 
 x_values = data.get(0)
 y_values = data.get(1)
