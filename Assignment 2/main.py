@@ -4,14 +4,13 @@ import numpy as np
 
 
 
-data = pd.read_csv('./Assignment 2/data2.csv', header=None)
+data = pd.read_csv('data2.csv', header=None)
 
 
 
 class Scatterplot:
     def __init__(self, canvas) -> None:
         self.canvas_width = self.canvas_height = 500
-        self.canvas_padding = 20
 
         self.x_axis_start = (0, self.canvas_height/2)
         self.x_axis_end = (self.canvas_width, self.canvas_height/2)
@@ -44,8 +43,7 @@ class Scatterplot:
         self.draw()   
 
     def create_shape(self, x: int, y: int, r: float, type_value: str, tag: str, color: str):
-        x = self.canvas_padding + x
-        y = self.canvas_padding + y
+        
         match type_value:
             case 'a':
                 object = self.canvas.create_oval(
@@ -92,16 +90,16 @@ class Scatterplot:
         # X-axis ticks
         for i in range(len(self.x_values)):
             if i % 10 == 0:
-                canvas.create_line(round(np.interp(i, [min(self.x_values), max(self.x_values)], [0, self.canvas_width])) + self.canvas_padding, self.canvas_height/2 - 2, round(
-                    np.interp(i, [min(self.x_values), max(self.x_values)], [0, self.canvas_width])) + self.canvas_padding, self.canvas_height/2 + 3)
+                canvas.create_line(round(np.interp(i, [min(self.x_values), max(self.x_values)], [0, self.canvas_width])), self.canvas_height/2 - 2, round(
+                    np.interp(i, [min(self.x_values), max(self.x_values)], [0, self.canvas_width])), self.canvas_height/2 + 3)
                 canvas.create_text(round(np.interp(i, [min(self.x_values), max(self.x_values)], [
-                                0, self.canvas_width])) + self.canvas_padding, self.canvas_height/2 + 10, text=str(i))
+                                0, self.canvas_width])), self.canvas_height/2 + 10, text=str(i))
 
         #Y-axis ticks
         for i in range(len(self.y_values)):
             if i % 10 == 0:
-                canvas.create_line(self.canvas_width/2 - 2, round(np.interp(i, [min(self.y_values), max(self.y_values)], [0, self.canvas_height])) + self.canvas_padding,
-                                self.canvas_width/2 + 3, round(np.interp(i, [min(self.y_values), max(self.y_values)], [0, self.canvas_height])) + self.canvas_padding)
+                canvas.create_line(self.canvas_width/2 - 2, round(np.interp(i, [min(self.y_values), max(self.y_values)], [0, self.canvas_height])),
+                                self.canvas_width/2 + 3, round(np.interp(i, [min(self.y_values), max(self.y_values)], [0, self.canvas_height])))
                 canvas.create_text(self.canvas_width/2 + 10, round(np.interp(
                     i, [min(self.y_values), max(self.y_values)], [self.canvas_height, 0])) + 3, text=str(i))
 
@@ -141,7 +139,7 @@ class Scatterplot:
             self.selected_point = None
             self.reset_points()
         else:
-            self.selected_point = (tag, center_x - self.canvas_padding, center_y - self.canvas_padding)
+            self.selected_point = (tag, center_x, center_y)
             new_x_values = []
             new_y_values = []
             
