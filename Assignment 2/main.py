@@ -4,7 +4,7 @@ import numpy as np
 
 
 
-data = pd.read_csv('data2.csv', header=None)
+data = pd.read_csv('./Assignment 2/data1.csv', header=None)
 
 
 
@@ -47,34 +47,41 @@ class Scatterplot:
         match type_value:
             case 'a':
                 object = self.canvas.create_oval(
-                    x - r, y - r, x + r, y + r, fill=color, outline=None, tags=tag)
-                canvas.tag_bind(object, '<Button-1>', lambda e: self.onItemClick(e, x, y, object, tag))
+                    x - r, y - r, x + r, y + r, fill=color, outline="black", tags=tag)
+                self.canvas.tag_bind(object, '<Button-1>', lambda e: self.onItemClick(e, x, y, object, tag))
+                self.canvas.tag_bind(object, '<Button-3>', lambda d: self.onItemRClick(d, x, y, object, tag))
 
             case 'b':
                 object = self.canvas.create_rectangle(
-                    x - r, y - r, x + r, y + r, fill=color, outline=None, tags=tag)
-                canvas.tag_bind(object, '<Button-1>', lambda e: self.onItemClick(e, x, y, object, tag))
+                    x - r, y - r, x + r, y + r, fill=color, outline="black", tags=tag)
+                self.canvas.tag_bind(object, '<Button-1>', lambda e: self.onItemClick(e, x, y, object, tag))
+                self.canvas.tag_bind(object, '<Button-3>', lambda d: self.onItemRClick(d, x, y, object, tag))
 
             case 'c':
                 object = self.canvas.create_polygon(
-                    [x, y + r + 0.5, x - r - 0.5, y - r - 0.5, x + r + 0.5, y - r - 0.5], fill=color, outline=None, tags=tag)
-                canvas.tag_bind(object, '<Button-1>', lambda e: self.onItemClick(e, x, y, object, tag))
+                    [x, y + r + 0.5, x - r - 0.5, y - r - 0.5, x + r + 0.5, y - r - 0.5], fill=color, outline="black", tags=tag)
+                self.canvas.tag_bind(object, '<Button-1>', lambda e: self.onItemClick(e, x, y, object, tag))
+                self.canvas.tag_bind(object, '<Button-3>', lambda d: self.onItemRClick(d, x, y, object, tag))
 
             case 'foo':
                 object = self.canvas.create_oval(
-                    x - r, y - r, x + r, y + r, fill=color, outline=None, tags=tag)
+                    x - r, y - r, x + r, y + r, fill=color, outline="black", tags=tag)
                 self.canvas.tag_bind(object, '<Button-1>', lambda e: self.onItemClick(e, x, y, object, tag))
-                return object
+                self.canvas.tag_bind(object, '<Button-3>', lambda d: self.onItemRClick(d, x, y, object, tag))
+                
+            
 
             case 'bar':
                 object = canvas.create_rectangle(
-                    x - r, y - r, x + r, y + r, fill=color, outline=None, tags=tag)
-                canvas.tag_bind(object, '<Button-1>', lambda e: self.onItemClick(e, x, y, object, tag))
+                    x - r, y - r, x + r, y + r, fill=color, outline="black", tags=tag)
+                self.canvas.tag_bind(object, '<Button-1>', lambda e: self.onItemClick(e, x, y, object, tag))
+                self.canvas.tag_bind(object, '<Button-3>', lambda d: self.onItemRClick(d, x, y, object, tag))
 
             case 'baz':
                 object = canvas.create_polygon(
-                    [x, y + r + 0.5, x - r - 0.5, y - r - 0.5, x + r + 0.5, y - r - 0.5], fill=color, outline=None, tags=tag)
-                canvas.tag_bind(object, '<Button-1>', lambda e: self.onItemClick(e, x, y, object, tag))
+                    [x, y + r + 0.5, x - r - 0.5, y - r - 0.5, x + r + 0.5, y - r - 0.5], fill=color, outline="black", tags=tag)
+                self.canvas.tag_bind(object, '<Button-1>', lambda e: self.onItemClick(e, x, y, object, tag))
+                self.canvas.tag_bind(object, '<Button-3>', lambda d: self.onItemRClick(d, x, y, object, tag))
                 
     def draw(self) -> None:
         self.canvas.delete('all')
@@ -111,13 +118,15 @@ class Scatterplot:
             else:
                 color = self.get_color(self.output_x[i], self.output_y[i])
 
-            object_id = self.create_shape( self.output_x[i], self.output_y[i], 3, self.type_values[i], str(i), color)
+            self.create_shape( self.output_x[i], self.output_y[i], 3, self.type_values[i], str(i), color)
 
         canvas.place(relx=0.5, rely=0.5, anchor="center")
         
     def get_color(self, x, y) -> str:
         selected_x = self.selected_point[1] 
         selected_y = self.selected_point[2] 
+
+        
 
         if x > selected_x and y > selected_y:
             return 'red'
@@ -127,9 +136,7 @@ class Scatterplot:
             return 'green'
         elif x < selected_x and y < selected_y:
             return 'yellow'
-        else:
-            return 'pink'
-
+      
 
     def onItemClick(self, event, center_x, center_y, object_id, tag):
         # if self.selected_point == None:
@@ -149,6 +156,22 @@ class Scatterplot:
 
             self.output_x = new_x_values
             self.output_y = new_y_values
+            
+            self.draw()
+        self.canvas.itemconfigure(int(self.selected_point[0]), fill="black")
+            
+    
+    def onItemRClick(self, event, center_x, center_y, object_id, tag):
+            self.selected_point = (tag, center_x, center_y)
+            dis = []
+
+            
+            for x, y in zip(self.output_x, self.output_y):
+                dis.append(( (x - center_x)** 2 + (y - center_y)**2 ) ** 0.5)
+            
+            dis.sort(reverse=True)
+            dis = dis[:5]
+            print(dis)
             
             self.draw()
             
