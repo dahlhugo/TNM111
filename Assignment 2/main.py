@@ -23,6 +23,7 @@ class Scatterplot:
         self.type_values = data.get(2)
 
         self.selected_point = None
+        self.r_selected_point = None
 
         self.output_x = np.array(
             np.interp(self.x_values, [min(self.x_values), max(self.x_values)], [0, self.canvas_width]))
@@ -118,9 +119,9 @@ class Scatterplot:
             else:
                 color = self.get_color(self.output_x[i], self.output_y[i])
 
-            self.create_shape( self.output_x[i], self.output_y[i], 3, self.type_values[i], str(i), color)
+            self.create_shape( self.output_x[i], self.output_y[i], 3, self.type_values[i], "point-"+str(i), color)
 
-        canvas.place(relx=0.5, rely=0.5, anchor="center")
+        self.canvas.place(relx=0.5, rely=0.5, anchor="center")
         
     def get_color(self, x, y) -> str:
         selected_x = self.selected_point[1] 
@@ -158,23 +159,40 @@ class Scatterplot:
             self.output_y = new_y_values
             
             self.draw()
-        self.canvas.itemconfigure(int(self.selected_point[0]), fill="black")
+            item = self.canvas.find_withtag(self.selected_point[0])
+            self.canvas.itemconfigure(item, fill="black")
+
             
     
     def onItemRClick(self, event, center_x, center_y, object_id, tag):
-            self.selected_point = (tag, center_x, center_y)
+            
             dis = []
 
+
             
-            for x, y in zip(self.output_x, self.output_y):
-                dis.append(( (x - center_x)** 2 + (y - center_y)**2 ) ** 0.5)
             
-            dis.sort(reverse=True)
-            dis = dis[:5]
-            print(dis)
+            for x, y, i in zip(self.output_x, self.output_y, range(len(self.output_x)-1)):
+                dis.append(((( (x - center_x)** 2 + (y - center_y)**2 ) ** 0.5), "point-"+str(i)))
             
-            self.draw()
+            dis.sort()
             
+            dis = dis[1:6]
+
+            if self.r_selected_point != None and self.r_selected_point[0] == tag:
+                self.canvas.itemconfig(self.r_selected_point[0], outline="black")
+                for z in dis:
+                    object_id = self.canvas.find_withtag(z[1])
+                    self.canvas.itemconfig(object_id, outline="black")
+                    self.r_selected_point = None
+            else:
+                self.r_selected_point = (tag, center_x, center_y)
+                self.canvas.itemconfig(self.r_selected_point[0], outline="pink")
+                for z in dis:
+                    object_id = self.canvas.find_withtag(z[1])
+                    self.canvas.itemconfig(object_id, outline="orange")
+                
+                
+            self.canvas.place(relx=0.5, rely=0.5, anchor="center")
         
 
 
