@@ -25,8 +25,10 @@ class Scatterplot:
         self.selected_point = None
         self.r_selected_point = None
 
-        self.offsetX = 0
-        self.offsetY = 0
+        self.origin_x = self.canvas_width / 2
+        self.origin_y = self.canvas_height / 2
+        self.offset_x = 0
+        self.offset_y = 0
 
 
         self.output_x = np.array(
@@ -37,15 +39,6 @@ class Scatterplot:
         
         self.canvas: tk.Canvas = canvas
         canvas.configure(width=self.canvas_width, height=self.canvas_height, background="grey")
-
-    def reset_points(self):
-        self.output_x = np.array(
-            np.interp(self.x_values, [min(self.x_values), max(self.x_values)], [0, self.canvas_width]))
-        
-        self.output_y = np.array(
-            np.interp(self.y_values, [min(self.y_values), max(self.y_values)], [self.canvas_height, 0]))
-        
-        self.draw()   
 
     def create_shape(self, x: int, y: int, r: float, type_value: str, tag: str, color: str):
         
@@ -102,18 +95,16 @@ class Scatterplot:
         # X-axis ticks
         for i in range(round(min(self.x_values)) , round(max(self.x_values))):
             if i % 10 == 0:
-                self.canvas.create_line(round(np.interp(i, [min(self.x_values), max(self.x_values)], [0, self.canvas_width])), self.canvas_height/2 - 2, round(
-                    np.interp(i, [min(self.x_values), max(self.x_values)], [0, self.canvas_width])), self.canvas_height/2 + 3)
-                self.canvas.create_text(round(np.interp(i, [min(self.x_values), max(self.x_values)], [
-                                0, self.canvas_width])), self.canvas_height/2 + 10, text=str(i))
+                x_position = round(np.interp(i, [min(self.x_values), max(self.x_values)], [0, self.canvas_width]))
+                self.canvas.create_line(x_position, self.canvas_height/2 - 2, x_position, self.canvas_height/2 + 3)
+                self.canvas.create_text(x_position, self.canvas_height/2 + 10, text=str(i))
 
         #Y-axis ticks
         for i in range(round(min(self.y_values)), round(max(self.y_values))):
-            if i % 10 == 0:
-                self.canvas.create_line(self.canvas_width/2 - 2, round(np.interp(i, [min(self.y_values), max(self.y_values)], [0, self.canvas_height])),
-                                self.canvas_width/2 + 3, round(np.interp(i, [min(self.y_values), max(self.y_values)], [0, self.canvas_height])))
-                self.canvas.create_text(self.canvas_width/2 + 10, round(np.interp(
-                    i, [min(self.y_values), max(self.y_values)], [self.canvas_height, 0])) + 3, text=str(i))
+            if i %  10 ==  0:
+                y_position = round(np.interp(i, [min(self.y_values), max(self.y_values)], [self.canvas_height,  0]))
+                self.canvas.create_line(self.canvas_width/2 -  2, y_position, self.canvas_width/2 +  3, y_position)
+                self.canvas.create_text(self.canvas_width/2 +  10, y_position, text=str(i))
 
         #Points
         color = ""
@@ -123,9 +114,11 @@ class Scatterplot:
             else:
                 color = self.get_color(self.output_x[i], self.output_y[i])
 
-            self.create_shape( self.output_x[i], self.output_y[i], 3, self.type_values[i], "point-"+str(i), color)
+            point = self.create_shape( self.output_x[i], self.output_y[i], 3, self.type_values[i], "point-"+str(i), color)
+            self.canvas.move("point-"+str(i), self.offset_x, self.offset_y)
 
         self.canvas.place(relx=0.5, rely=0.5, anchor="center")
+        
         
     def get_color(self, x, y) -> str:
         selected_x = self.selected_point[1] 
@@ -141,6 +134,8 @@ class Scatterplot:
             return 'green'
         elif x < selected_x and y < selected_y:
             return 'yellow'
+        else:
+            return 'black'
       
 
     def onItemClick(self, event, center_x, center_y, object_id, tag):
@@ -149,22 +144,20 @@ class Scatterplot:
 
         if self.selected_point != None and self.selected_point[0] == tag:
             self.selected_point = None
-            self.reset_points()
+            self.offset_x = 0
+            self.offset_y = 0
         else:
             self.selected_point = (tag, center_x, center_y)
-            new_x_values = []
-            new_y_values = []
+            #get offsetx and y
+            self.offset_x = self.origin_x - center_x
+            self.offset_y = self.origin_y - center_y
             
-            for x, y in zip(self.output_x, self.output_y):
-                new_x_values.append(x - center_x + self.canvas_width / 2)
-                new_y_values.append(y - center_y + self.canvas_height / 2)
 
-            self.output_x = new_x_values
-            self.output_y = new_y_values
-            
-            self.draw()
+
+
             item = self.canvas.find_withtag(self.selected_point[0])
             self.canvas.itemconfigure(item, fill="black")
+        self.draw()
 
             
     
@@ -190,7 +183,7 @@ class Scatterplot:
                     self.r_selected_point = None
             else:
                 self.r_selected_point = (tag, center_x, center_y)
-                self.canvas.itemconfig(self.r_selected_point[0], outline="pink")
+                self.canvas.itemconfig(self.r_selected_point[0], outline="magenta")
                 for z in dis:
                     object_id = self.canvas.find_withtag(z[1])
                     self.canvas.itemconfig(object_id, outline="orange")
