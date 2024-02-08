@@ -25,6 +25,8 @@ class Scatterplot:
         self.selected_point = None
         self.r_selected_point = None
 
+        self.offsetX = 
+
         self.output_x = np.array(
             np.interp(self.x_values, [min(self.x_values), max(self.x_values)], [0, self.canvas_width]))
         
@@ -90,25 +92,25 @@ class Scatterplot:
         
 
         #Axises
-        canvas.create_line(0, self.canvas_height/2, self.canvas_width, self.canvas_height/2)
-        canvas.create_line(self.canvas_width/2, 0, self.canvas_width/2, self.canvas_height)
+        self.canvas.create_line(0, self.canvas_height/2, self.canvas_width, self.canvas_height/2)
+        self.canvas.create_line(self.canvas_width/2, 0, self.canvas_width/2, self.canvas_height)
 
         
             
         # X-axis ticks
-        for i in range(len(self.x_values)):
+        for i in range(round(min(self.x_values)) , round(max(self.x_values))):
             if i % 10 == 0:
-                canvas.create_line(round(np.interp(i, [min(self.x_values), max(self.x_values)], [0, self.canvas_width])), self.canvas_height/2 - 2, round(
+                self.canvas.create_line(round(np.interp(i, [min(self.x_values), max(self.x_values)], [0, self.canvas_width])), self.canvas_height/2 - 2, round(
                     np.interp(i, [min(self.x_values), max(self.x_values)], [0, self.canvas_width])), self.canvas_height/2 + 3)
-                canvas.create_text(round(np.interp(i, [min(self.x_values), max(self.x_values)], [
+                self.canvas.create_text(round(np.interp(i, [min(self.x_values), max(self.x_values)], [
                                 0, self.canvas_width])), self.canvas_height/2 + 10, text=str(i))
 
         #Y-axis ticks
-        for i in range(len(self.y_values)):
+        for i in range(round(min(self.y_values)), round(max(self.y_values))):
             if i % 10 == 0:
-                canvas.create_line(self.canvas_width/2 - 2, round(np.interp(i, [min(self.y_values), max(self.y_values)], [0, self.canvas_height])),
+                self.canvas.create_line(self.canvas_width/2 - 2, round(np.interp(i, [min(self.y_values), max(self.y_values)], [0, self.canvas_height])),
                                 self.canvas_width/2 + 3, round(np.interp(i, [min(self.y_values), max(self.y_values)], [0, self.canvas_height])))
-                canvas.create_text(self.canvas_width/2 + 10, round(np.interp(
+                self.canvas.create_text(self.canvas_width/2 + 10, round(np.interp(
                     i, [min(self.y_values), max(self.y_values)], [self.canvas_height, 0])) + 3, text=str(i))
 
         #Points
