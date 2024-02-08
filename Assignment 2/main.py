@@ -25,7 +25,9 @@ class Scatterplot:
         self.selected_point = None
         self.r_selected_point = None
 
-        self.offsetX = 
+        self.offsetX = 0
+        self.offsetY = 0
+
 
         self.output_x = np.array(
             np.interp(self.x_values, [min(self.x_values), max(self.x_values)], [0, self.canvas_width]))
