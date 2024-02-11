@@ -88,13 +88,13 @@ function worldMap(data) {
 
     //Redraw the dots each time we interact with the map
     //Remove comment tags when done with task 20
-    //leaflet_map.on("moveend", reset);
-    //reset();
+    leaflet_map.on("moveend", reset);
+    reset();
 
     //Mouseover
     //Remove comment tags when done with task 20
-    //mouseOver(feature);
-    //mouseOut(feature);
+    mouseOver(feature);
+    mouseOut(feature);
 
     //Mouse over function
     function mouseOver(feature){
