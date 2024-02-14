@@ -1,4 +1,5 @@
 export type Node = {
+    
     name: string,
     value: number,
     colour: string
@@ -15,7 +16,3 @@ export type Episode = {
     links: Link[]
 }
 
-export type NodePosition = {
-    x: number,
-    y: number
-}
