@@ -5,27 +5,28 @@ import { ForceGraph2D,  } from 'react-force-graph';
 
 type NetworkGraphProps = {
     data: Episode,
-    highlightNodes: NodeType | null,
-    setHighlightNodes: Dispatch<SetStateAction<NodeType | null>>
+    nodeRef: React.MutableRefObject<string>
+    clickNode: (node: NodeType) => void
 }
 
-const NetworkGraph = ({data, highlightNodes, setHighlightNodes}: NetworkGraphProps) => {
+const NetworkGraph = ({data, nodeRef, clickNode}: NetworkGraphProps) => {
     const graphRef = useRef<any>();
 
     const paintRing = useCallback((node: any, ctx: CanvasRenderingContext2D) => {
         ctx.beginPath();
-        ctx.arc(node.x, node.y, node.value, 0, Math.PI * 2, false);
-        ctx.fillStyle = highlightNodes?.name === node.name ?  'red': node.colour;
+        ctx.arc(node.x, node.y, node.value, 0, Math.PI * 2);
+        ctx.lineWidth = nodeRef.current === node.name ? 3 : 1;
+        ctx.strokeStyle = nodeRef.current === node.name ?  'red': "black";
+        ctx.fillStyle = node.colour;
         ctx.fill();
-    }, [highlightNodes]);
+        ctx.stroke();
 
-    const handleNodeClick = (node: NodeType) => {
-        if(node != highlightNodes) {
-            setHighlightNodes(node);
-        } else{
-            setHighlightNodes(null);
-        }
-    }
+        ctx.textBaseline = "middle";
+        ctx.textAlign = "center";
+        ctx.font = `${node.value / 4}px Comic Sans MS`;
+        ctx.fillStyle = "black"
+        ctx.fillText(node.name, node.x, node.y)
+    }, [nodeRef]);
     
     const new_nodes: NodeType[] = data.nodes.map((node: Node, i) => {
         const new_node: NodeType = {
@@ -45,24 +46,23 @@ const NetworkGraph = ({data, highlightNodes, setHighlightNodes}: NetworkGraphPro
 
     useEffect(() => {
         if(graphRef.current){
-            graphRef.current.d3Force('charge').strength(-150);
-            ForceGraph2D.prototype
-
+            graphRef.current.d3Force('charge').strength(-200);
         }
     });
 
     return (
         <ForceGraph2D
             ref={graphRef}
+            width={600}
             height={400}
             graphData={graphData}
             nodeRelSize={2} 
             nodeColor={(node: NodeType) => node.colour} 
             nodeVal={(node: NodeType) => node.value} 
-            nodeLabel={(node: NodeType) => node.name} 
             linkWidth={(link: Link) => link.value}
-            onNodeClick={handleNodeClick}
+            onNodeClick={clickNode}
             nodeCanvasObject={paintRing}
+
             />
     );
 };
