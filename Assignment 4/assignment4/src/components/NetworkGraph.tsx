@@ -1,22 +1,24 @@
 import { Dispatch, SetStateAction, forwardRef, useCallback, useEffect, useRef } from 'react';
 import { Episode, Link, Node, NodeType } from '../types/types';
-import { ForceGraph2D,  } from 'react-force-graph';
+import { ForceGraph2D, } from 'react-force-graph';
 
 
 type NetworkGraphProps = {
     data: Episode,
-    nodeRef: React.MutableRefObject<string>
-    clickNode: (node: NodeType) => void
+    nodeRef: React.MutableRefObject<string>,
+    clickNode: (node: NodeType) => void,
+    hoverNode: (node: NodeType) => void,
 }
 
-const NetworkGraph = ({data, nodeRef, clickNode}: NetworkGraphProps) => {
+const NetworkGraph = ({ data, nodeRef, clickNode }: NetworkGraphProps) => {
     const graphRef = useRef<any>();
+
 
     const paintRing = useCallback((node: any, ctx: CanvasRenderingContext2D) => {
         ctx.beginPath();
         ctx.arc(node.x, node.y, node.value, 0, Math.PI * 2);
         ctx.lineWidth = nodeRef.current === node.name ? 3 : 1;
-        ctx.strokeStyle = nodeRef.current === node.name ?  'red': "black";
+        ctx.strokeStyle = nodeRef.current === node.name ? 'red' : "black";
         ctx.fillStyle = node.colour;
         ctx.fill();
         ctx.stroke();
@@ -27,7 +29,7 @@ const NetworkGraph = ({data, nodeRef, clickNode}: NetworkGraphProps) => {
         ctx.fillStyle = "black"
         ctx.fillText(node.name, node.x, node.y)
     }, [nodeRef]);
-    
+
     const new_nodes: NodeType[] = data.nodes.map((node: Node, i) => {
         const new_node: NodeType = {
             id: i,
@@ -45,7 +47,7 @@ const NetworkGraph = ({data, nodeRef, clickNode}: NetworkGraphProps) => {
     }
 
     useEffect(() => {
-        if(graphRef.current){
+        if (graphRef.current) {
             graphRef.current.d3Force('charge').strength(-200);
         }
     });
@@ -56,14 +58,14 @@ const NetworkGraph = ({data, nodeRef, clickNode}: NetworkGraphProps) => {
             width={600}
             height={400}
             graphData={graphData}
-            nodeRelSize={2} 
-            nodeColor={(node: NodeType) => node.colour} 
-            nodeVal={(node: NodeType) => node.value} 
+            nodeRelSize={2}
+            nodeColor={(node: NodeType) => node.colour}
+            nodeVal={(node: NodeType) => node.value}
             linkWidth={(link: Link) => link.value}
             onNodeClick={clickNode}
             nodeCanvasObject={paintRing}
 
-            />
+        />
     );
 };
 

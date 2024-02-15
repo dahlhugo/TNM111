@@ -11,6 +11,7 @@ import { Episode, NodeType } from './types/types'
 function App() {
   // const [nodeId, setNodeId] = useState<string | null>(null);
   const nodeRef = useRef("");
+  const [nodeDetails, setNodeDetails] = useState<NodeType | null>(null);
 
   const handleNodeClick = (node: NodeType) => {
     if (nodeRef.current !== node.name) {
@@ -28,8 +29,8 @@ function App() {
             saf
           </Flex>
           <Flex flex={9} flexDir={'column'} justifyContent={'space-around'}>
-            <NetworkGraph data={episode1} nodeRef={nodeRef} clickNode={handleNodeClick} />
-            <NetworkGraph data={episode2} nodeRef={nodeRef} clickNode={handleNodeClick} />
+            <NetworkGraph data={episode1} nodeRef={nodeRef} hoverNode={setNodeDetails} clickNode={handleNodeClick} />
+            <NetworkGraph data={episode2} nodeRef={nodeRef} hoverNode={setNodeDetails} clickNode={handleNodeClick} />
           </Flex>
         </Flex>
       </ChakraProvider>
