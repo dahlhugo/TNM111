@@ -16,3 +16,7 @@ export type Episode = {
     links: Link[]
 }
 
+export type NodeType = Node & {
+    id: number,
+
+}
