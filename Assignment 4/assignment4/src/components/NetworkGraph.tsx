@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, forwardRef, useCallback, useEffect, useRef, Mutab } from 'react';
+import { Dispatch, SetStateAction, forwardRef, useCallback, useEffect, useRef, MutableRefObject } from 'react';
 import { Episode, Link, Node, NodeType } from '../types/types';
 import { ForceGraph2D, } from 'react-force-graph';
 
@@ -8,6 +8,7 @@ type NetworkGraphProps = {
     nodeRef: MutableRefObject<string>,
     clickNode: (node: NodeType) => void,
     hoverNode: (node: NodeType) => void,
+    hoverLink: (link: Link) => void,
 }
 
 const NetworkGraph = ({ data, nodeRef, clickNode }: NetworkGraphProps) => {
@@ -51,6 +52,19 @@ const NetworkGraph = ({ data, nodeRef, clickNode }: NetworkGraphProps) => {
             graphRef.current.d3Force('charge').strength(-200);
         }
     });
+    
+    const handleNodeHover = (node: Node)  => {
+
+        console.log('this is a node')
+        
+    }
+
+    const handleLinkHover = (link: Link) => {
+
+        console.log('this is a link')
+
+
+    }
 
     return (
         <ForceGraph2D
@@ -63,6 +77,8 @@ const NetworkGraph = ({ data, nodeRef, clickNode }: NetworkGraphProps) => {
             nodeVal={(node: NodeType) => node.value}
             linkWidth={(link: Link) => link.value}
             onNodeClick={clickNode}
+            onNodeHover={handleNodeHover}
+            onLinkHover={handleLinkHover}
             nodeCanvasObject={paintRing}
 
         />
