@@ -1,11 +1,11 @@
-import { Dispatch, SetStateAction, forwardRef, useCallback, useEffect, useRef } from 'react';
+import { Dispatch, SetStateAction, forwardRef, useCallback, useEffect, useRef, Mutab } from 'react';
 import { Episode, Link, Node, NodeType } from '../types/types';
 import { ForceGraph2D, } from 'react-force-graph';
 
 
 type NetworkGraphProps = {
     data: Episode,
-    nodeRef: React.MutableRefObject<string>,
+    nodeRef: MutableRefObject<string>,
     clickNode: (node: NodeType) => void,
     hoverNode: (node: NodeType) => void,
 }
@@ -55,7 +55,7 @@ const NetworkGraph = ({ data, nodeRef, clickNode }: NetworkGraphProps) => {
     return (
         <ForceGraph2D
             ref={graphRef}
-            width={600}
+            width={2* (innerWidth / 3)}
             height={400}
             graphData={graphData}
             nodeRelSize={2}

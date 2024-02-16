@@ -6,12 +6,15 @@ import { Graph, DefaultNode, DefaultLink } from '@visx/network'
 import { Box, ChakraProvider, Flex, VStack } from '@chakra-ui/react'
 import NetworkGraph from './components/NetworkGraph'
 import { ReactSVGElement, useEffect, useRef, useState } from 'react'
-import { Episode, NodeType } from './types/types'
+import { Episode, Link, NodeType } from './types/types'
+import Details from './components/Details'
 
 function App() {
   // const [nodeId, setNodeId] = useState<string | null>(null);
   const nodeRef = useRef("");
-  const [nodeDetails, setNodeDetails] = useState<NodeType | null>(null);
+  const [details, setDetails] = useState<Node | Link | null>(null);
+
+  var windowW = innerWidth;
 
   const handleNodeClick = (node: NodeType) => {
     if (nodeRef.current !== node.name) {
@@ -24,13 +27,13 @@ function App() {
   return (
     <>
       <ChakraProvider>
-        <Flex flexDir={'row'} width={'100vw'} height={'100vh'} padding={10} >
+        <Flex flexDir={'row'} width={windowW} height={innerHeight} padding={10} >
           <Flex flex={3} background="red" flexDir={'column'}>
-            saf
+            <Details details={details}/>
           </Flex>
           <Flex flex={9} flexDir={'column'} justifyContent={'space-around'}>
-            <NetworkGraph data={episode1} nodeRef={nodeRef} hoverNode={setNodeDetails} clickNode={handleNodeClick} />
-            <NetworkGraph data={episode2} nodeRef={nodeRef} hoverNode={setNodeDetails} clickNode={handleNodeClick} />
+            <NetworkGraph data={episode1} nodeRef={nodeRef} hoverNode={setDetails} clickNode={handleNodeClick} />
+            <NetworkGraph data={episode2} nodeRef={nodeRef} hoverNode={setDetails} clickNode={handleNodeClick} />
           </Flex>
         </Flex>
       </ChakraProvider>
