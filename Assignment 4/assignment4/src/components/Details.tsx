@@ -1,47 +1,43 @@
 import { Center, Text } from "@chakra-ui/react";
 import { Link, Node } from "../types/types";
+import { useEffect, useState } from "react";
 
-type DetailsProps = {
-    details: Node | Link | null
+
+
+
+type NodeDetailsProps = {
+    nodeDetails: Node | null;
 }
 
+export const NodeDetails = ({nodeDetails} : NodeDetailsProps) => {
+    
 
-const NodeDetails = (details: Node) => {
-    return (
-    <Center>
-        <Text></Text>
-    </Center>
-    );
+    if (nodeDetails) {
+        return (
+            <Center>
+                <Text>Node Details: </Text>
+                <Text>{`Node name: ${nodeDetails.name}`}</Text>
+                <Text>{`Node value: ${nodeDetails.value}`}</Text>
+            </Center>
+        );
+    } else {
+        return (
+            <Center>
+                <Text>Node Details: </Text>
+                <Text>Hover a node to see details</Text>
+            </Center>
+        );
+    }
+
 }
 
-
-
-const LinkDetails = (details: Link) => {
+export const LinkDetails = (props: Link) => {
+    const { source, target, value } = props;
     return (
         <Center>
-            <Text>fadslkj</Text>
+            <Text>{source}</Text>
         </Center>
     )
 }
 
-const Details = ({details} : DetailsProps) => {
 
-    const isNode = (details: Node | Link) => {
-        return (details as Node).name in details
-    }
-    if(details != null) {
-        return (
-            <Center>
-                {
-                    isNode(details) ? (details: Node) => <NodeDetails details={details}></NodeDetails> 
-                    : (details: Link) => { return <LinkDetails details={details}/>}
-                }
-            </Center>
-        );
-
-    } else {
-        return <></>;
-    }
-}
-
-export default Details;

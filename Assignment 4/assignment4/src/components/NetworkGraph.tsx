@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, forwardRef, useCallback, useEffect, useRef, MutableRefObject } from 'react';
+import { Dispatch, SetStateAction, forwardRef, useCallback, useEffect, useRef, MutableRefObject, memo } from 'react';
 import { Episode, Link, Node, NodeType } from '../types/types';
 import { ForceGraph2D, } from 'react-force-graph';
 
@@ -7,11 +7,10 @@ type NetworkGraphProps = {
     data: Episode,
     nodeRef: MutableRefObject<string>,
     clickNode: (node: NodeType) => void,
-    hoverNode: (node: NodeType) => void,
-    hoverLink: (link: Link) => void,
+    hoverNode: (node: Node | null) => void,
 }
 
-const NetworkGraph = ({ data, nodeRef, clickNode }: NetworkGraphProps) => {
+const NetworkGraph =({ data, nodeRef, hoverNode, clickNode}: NetworkGraphProps) => {
     const graphRef = useRef<any>();
 
 
@@ -30,7 +29,7 @@ const NetworkGraph = ({ data, nodeRef, clickNode }: NetworkGraphProps) => {
         ctx.fillStyle = "black"
         ctx.fillText(node.name, node.x, node.y)
     }, [nodeRef]);
-
+    
     const new_nodes: NodeType[] = data.nodes.map((node: Node, i) => {
         const new_node: NodeType = {
             id: i,
@@ -40,7 +39,6 @@ const NetworkGraph = ({ data, nodeRef, clickNode }: NetworkGraphProps) => {
         }
         return new_node;
     });
-    console.log(new_nodes)
 
     const graphData = {
         nodes: new_nodes,
@@ -53,18 +51,7 @@ const NetworkGraph = ({ data, nodeRef, clickNode }: NetworkGraphProps) => {
         }
     });
     
-    const handleNodeHover = (node: Node)  => {
-
-        console.log('this is a node')
-        
-    }
-
-    const handleLinkHover = (link: Link) => {
-
-        console.log('this is a link')
-
-
-    }
+  
 
     return (
         <ForceGraph2D
@@ -77,12 +64,11 @@ const NetworkGraph = ({ data, nodeRef, clickNode }: NetworkGraphProps) => {
             nodeVal={(node: NodeType) => node.value}
             linkWidth={(link: Link) => link.value}
             onNodeClick={clickNode}
-            onNodeHover={handleNodeHover}
-            onLinkHover={handleLinkHover}
+            onNodeHover={hoverNode}
             nodeCanvasObject={paintRing}
 
         />
     );
 };
 
-export default NetworkGraph;
+export default memo(NetworkGraph);
