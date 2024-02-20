@@ -1,16 +1,18 @@
 import { Dispatch, SetStateAction, forwardRef, useCallback, useEffect, useRef, MutableRefObject, memo } from 'react';
 import { Episode, Link, Node, NodeType } from '../types/types';
 import { ForceGraph2D, } from 'react-force-graph';
+import { Box } from '@chakra-ui/react';
 
 
 type NetworkGraphProps = {
-    data: Episode,
+    data: {nodes: NodeType[], links: Link[]},
     nodeRef: MutableRefObject<string>,
     clickNode: (node: NodeType) => void,
     hoverNode: (node: Node | null) => void,
+    hoverLink: (link: Link | null) => void,
 }
 
-const NetworkGraph =({ data, nodeRef, hoverNode, clickNode}: NetworkGraphProps) => {
+const NetworkGraph = ({ data, nodeRef, hoverNode, clickNode, hoverLink }: NetworkGraphProps) => {
     const graphRef = useRef<any>();
 
 
@@ -29,45 +31,37 @@ const NetworkGraph =({ data, nodeRef, hoverNode, clickNode}: NetworkGraphProps) 
         ctx.fillStyle = "black"
         ctx.fillText(node.name, node.x, node.y)
     }, [nodeRef]);
-    
-    const new_nodes: NodeType[] = data.nodes.map((node: Node, i) => {
-        const new_node: NodeType = {
-            id: i,
-            colour: node.colour,
-            name: node.name,
-            value: node.value
-        }
-        return new_node;
-    });
 
-    const graphData = {
-        nodes: new_nodes,
-        links: data.links
-    }
+    
+
+
 
     useEffect(() => {
         if (graphRef.current) {
             graphRef.current.d3Force('charge').strength(-200);
         }
     });
-    
-  
+
+
 
     return (
-        <ForceGraph2D
-            ref={graphRef}
-            width={2* (innerWidth / 3)}
-            height={400}
-            graphData={graphData}
-            nodeRelSize={2}
-            nodeColor={(node: NodeType) => node.colour}
-            nodeVal={(node: NodeType) => node.value}
-            linkWidth={(link: Link) => link.value}
-            onNodeClick={clickNode}
-            onNodeHover={hoverNode}
-            nodeCanvasObject={paintRing}
-
-        />
+        <Box border={2} borderRadius={5} borderStyle={'solid'}>
+            <ForceGraph2D
+                ref={graphRef}
+                width={2 * (innerWidth / 3)}
+                height={400}
+                graphData={data}
+                nodeRelSize={2}
+                nodeColor={(node: NodeType) => node.colour}
+                nodeVal={(node: NodeType) => node.value}
+                linkWidth={(link: Link) => link.value}
+                onNodeClick={clickNode}
+                onNodeHover={hoverNode}
+                nodeCanvasObject={paintRing}
+                onLinkHover={hoverLink}
+                
+            />
+        </Box>
     );
 };
 
