@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, forwardRef, useCallback, useEffect, useRef, MutableRefObject, memo } from 'react';
+import { Dispatch, SetStateAction, forwardRef, useCallback, useEffect, useRef, MutableRefObject, memo, useState } from 'react';
 import { Episode, Link, Node, NodeType } from '../types/types';
 import { ForceGraph2D, } from 'react-force-graph';
 import { Box } from '@chakra-ui/react';
@@ -6,21 +6,22 @@ import { Box } from '@chakra-ui/react';
 
 type NetworkGraphProps = {
     data: {nodes: NodeType[], links: Link[]},
-    nodeRef: MutableRefObject<string>,
+    highlightedNode: string,
     clickNode: (node: NodeType) => void,
     hoverNode: (node: Node | null) => void,
     hoverLink: (link: Link | null) => void,
+    nodeInterval: number[],
 }
 
-const NetworkGraph = ({ data, nodeRef, hoverNode, clickNode, hoverLink }: NetworkGraphProps) => {
+const NetworkGraph = ({ data, highlightedNode, hoverNode, clickNode, hoverLink, nodeInterval }: NetworkGraphProps) => {
     const graphRef = useRef<any>();
 
 
     const paintRing = useCallback((node: any, ctx: CanvasRenderingContext2D) => {
         ctx.beginPath();
         ctx.arc(node.x, node.y, node.value, 0, Math.PI * 2);
-        ctx.lineWidth = nodeRef.current === node.name ? 3 : 1;
-        ctx.strokeStyle = nodeRef.current === node.name ? 'red' : "black";
+        ctx.lineWidth = highlightedNode === node.name ? 3 : 1;
+        ctx.strokeStyle = highlightedNode === node.name ? 'red' : "black";
         ctx.fillStyle = node.colour;
         ctx.fill();
         ctx.stroke();
@@ -30,17 +31,24 @@ const NetworkGraph = ({ data, nodeRef, hoverNode, clickNode, hoverLink }: Networ
         ctx.font = `${node.value / 4}px Comic Sans MS`;
         ctx.fillStyle = "black"
         ctx.fillText(node.name, node.x, node.y)
-    }, [nodeRef]);
+    }, [highlightedNode]);
 
     
 
+    const [filteredData, setFilteredData] = useState(data);
 
+    useEffect(() => {
+        const filteredNodes = data.nodes.filter((node) => node.value >= nodeInterval[0] && node.value <= nodeInterval[1]);
+        setFilteredData({ ...data, nodes: filteredNodes });
+    }, [data, nodeInterval]);
 
     useEffect(() => {
         if (graphRef.current) {
             graphRef.current.d3Force('charge').strength(-200);
         }
     });
+
+    useEffect(() => {}, [highlightedNode]);
 
 
 
@@ -50,7 +58,7 @@ const NetworkGraph = ({ data, nodeRef, hoverNode, clickNode, hoverLink }: Networ
                 ref={graphRef}
                 width={2 * (innerWidth / 3)}
                 height={400}
-                graphData={data}
+                graphData={filteredData}
                 nodeRelSize={2}
                 nodeColor={(node: NodeType) => node.colour}
                 nodeVal={(node: NodeType) => node.value}
