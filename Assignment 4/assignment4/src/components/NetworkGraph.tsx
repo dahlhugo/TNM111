@@ -11,9 +11,10 @@ type NetworkGraphProps = {
     hoverNode: (node: Node | null) => void,
     hoverLink: (link: Link | null) => void,
     nodeInterval: number[],
+    linkInterval: number[],
 }
 
-const NetworkGraph = ({ data, highlightedNode, hoverNode, clickNode, hoverLink, nodeInterval }: NetworkGraphProps) => {
+const NetworkGraph = ({ data, highlightedNode, hoverNode, clickNode, hoverLink, nodeInterval, linkInterval }: NetworkGraphProps) => {
     const graphRef = useRef<any>();
 
 
@@ -41,6 +42,12 @@ const NetworkGraph = ({ data, highlightedNode, hoverNode, clickNode, hoverLink, 
         const filteredNodes = data.nodes.filter((node) => node.value >= nodeInterval[0] && node.value <= nodeInterval[1]);
         setFilteredData({ ...data, nodes: filteredNodes });
     }, [data, nodeInterval]);
+
+    useEffect(() => {
+        const filteredLinks = data.links.filter((link) => link.value >= linkInterval[0] && link.value <= linkInterval[1])
+        const filteredNodes = data.nodes.filter()
+        setFilteredData({...data, links: filteredLinks});
+    },[data, linkInterval]);
 
     useEffect(() => {
         if (graphRef.current) {

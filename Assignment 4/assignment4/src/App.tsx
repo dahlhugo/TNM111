@@ -23,6 +23,10 @@ function App() {
   const minNodeRange = Math.min(...allEpisodes.nodes.map(node => node.value));
   const [nodeInterval, setNodeInterval] = useState<number[]>([minNodeRange, maxNodeRange]);
   
+  const maxLinkRange = Math.max(...allEpisodes.links.map(link => link.value));
+  const minLinkRange = Math.min(...allEpisodes.links.map(link => link.value));
+  const [linkInterval, setLinkInterval] = useState<number[]>([minLinkRange, maxLinkRange]);
+
   const formattedNodes1: NodeType[] = episode1.nodes.map((node: Node, i) => {
     const new_node: NodeType = {
       id: i,
@@ -74,8 +78,11 @@ function App() {
 
   const handleNodeRangeSlider = useCallback((val: number[]) => {
     setNodeInterval(val)
-
   },[]);
+
+  const handleLinkRange = useCallback((val: number[]) => {
+    setLinkInterval(val);
+  },[])
   
   return (
     <>
@@ -92,11 +99,11 @@ function App() {
               <LinkDetails linkDetails={linkDetails} /> : 
               <LinkDetails linkDetails={null} />
             }
-          <FilterBox nodeRange={[minNodeRange, maxNodeRange]} onChangeInterval={handleNodeRangeSlider}/>
+          <FilterBox nodeRange={[minNodeRange, maxNodeRange]} linkRange={[minLinkRange, maxNodeRange]} onChangeLinkRange={handleLinkRange} onChangeInterval={handleNodeRangeSlider}/>
           </Flex>
           <Flex flex={9} flexDir={'column'} justifyContent={'space-around'}>
-            <NetworkGraph data={graphData1} highlightedNode={highlightedNode} hoverLink={handleLinkHover} hoverNode={handleNodeHover} clickNode={handleNodeClick} nodeInterval={nodeInterval} />
-            <NetworkGraph data={graphData2} highlightedNode={highlightedNode} hoverNode={handleNodeHover} clickNode={handleNodeClick} hoverLink={handleLinkHover} nodeInterval={nodeInterval}/>
+            <NetworkGraph data={graphData1} highlightedNode={highlightedNode} hoverLink={handleLinkHover} hoverNode={handleNodeHover} clickNode={handleNodeClick} nodeInterval={nodeInterval} linkInterval={linkInterval}/>
+            <NetworkGraph data={graphData2} highlightedNode={highlightedNode} hoverNode={handleNodeHover} clickNode={handleNodeClick} hoverLink={handleLinkHover} nodeInterval={nodeInterval} linkInterval={linkInterval}/>
           </Flex>
         </Flex>
       </ChakraProvider>

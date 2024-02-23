@@ -3,10 +3,12 @@ import { useState } from "react";
 
 type FilterBoxProps = {
     nodeRange: number[],
-    onChangeInterval: (val: number[]) => void, 
+    linkRange: number[],
+    onChangeInterval: (val: number[]) => void,
+    onChangeLinkRange: (val: number[]) => void,
 }
 
-const FilterBox = ({nodeRange, onChangeInterval}: FilterBoxProps) => {
+const FilterBox = ({nodeRange, onChangeInterval, linkRange, onChangeLinkRange}: FilterBoxProps) => {
     const [disableNodeSlider, setDisableNodeSlider] = useState(true);
 
     return (
@@ -20,6 +22,20 @@ const FilterBox = ({nodeRange, onChangeInterval}: FilterBoxProps) => {
                 min={nodeRange[0]}
                 max={nodeRange[1]}
                 onChange={onChangeInterval}
+            > 
+                <RangeSliderTrack>
+                    <RangeSliderFilledTrack />
+                </RangeSliderTrack>
+                <RangeSliderThumb index={0} />
+                <RangeSliderThumb index={1} />
+            </RangeSlider>
+            <Text fontSize={10} m={2}>Value Range:</Text>
+            <RangeSlider 
+                
+                defaultValue={linkRange}
+                min={linkRange[0]}
+                max={linkRange[1]}
+                onChange={onChangeLinkRange}
             > 
                 <RangeSliderTrack>
                     <RangeSliderFilledTrack />
