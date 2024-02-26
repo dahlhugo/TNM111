@@ -1,14 +1,12 @@
-
 import './App.css'
 import episode1 from './json/starwars-episode-1-interactions-allCharacters.json'
 import episode2 from './json/starwars-episode-2-interactions-allCharacters.json'
 import allEpisodes from './json/starwars-full-interactions-allCharacters.json'
-import { Graph, DefaultNode, DefaultLink } from '@visx/network'
-import { Box, ChakraProvider, Flex, VStack } from '@chakra-ui/react'
+import {ChakraProvider, Flex} from '@chakra-ui/react'
 import NetworkGraph from './components/NetworkGraph'
-import { ReactSVGElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Episode, Link, Node, NodeType } from './types/types'
-import  { LinkDetails, NodeDetails } from './components/Details'
+import {useCallback, useState} from 'react'
+import {Link, Node, NodeType} from './types/types'
+import {LinkDetails, NodeDetails} from './components/Details'
 import FilterBox from './components/FilterBox'
 
 
@@ -18,14 +16,12 @@ function App() {
   const [nodeDetails, setNodeDetails] = useState<Node | null>(null);
   const [linkDetails, setLinkDetails] = useState<{link: Link, nodes: any} | null>(null);
   //const memoEpisode = useMemo(() => episode1, [])
-  
-  const maxNodeRange = Math.max(...allEpisodes.nodes.map(node => node.value));
-  const minNodeRange = Math.min(...allEpisodes.nodes.map(node => node.value));
-  const [nodeInterval, setNodeInterval] = useState<number[]>([minNodeRange, maxNodeRange]);
-  
+
+
   const maxLinkRange = Math.max(...allEpisodes.links.map(link => link.value));
   const minLinkRange = Math.min(...allEpisodes.links.map(link => link.value));
-  const [linkInterval, setLinkInterval] = useState<number[]>([minLinkRange, maxLinkRange]);
+  const [linkInterval1, setLinkInterval1] = useState<number[]>([minLinkRange, maxLinkRange]);
+  const [linkInterval2, setLinkInterval2] = useState<number[]>([minLinkRange, maxLinkRange]);
 
   const formattedNodes1: NodeType[] = episode1.nodes.map((node: Node, i) => {
     const new_node: NodeType = {
@@ -47,7 +43,7 @@ function App() {
   });
   const data1 = {nodes: formattedNodes1, links: episode1.links}
   const data2 = {nodes: formattedNodes2, links: episode2.links}
-  
+
   const [graphData1, setGraphData1] = useState(data1);
   const [graphData2, setGraphData2] = useState(data2);
 
@@ -76,14 +72,14 @@ function App() {
     setLinkDetails(link || null);
   }, []);
 
-  const handleNodeRangeSlider = useCallback((val: number[]) => {
-    setNodeInterval(val)
+  const handleLinkRange1 = useCallback((val: number[]) => {
+    setLinkInterval1(val);
   },[]);
 
-  const handleLinkRange = useCallback((val: number[]) => {
-    setLinkInterval(val);
-  },[])
-  
+  const handleLinkRange2 = useCallback((val: number[]) => {
+    setLinkInterval2(val);
+  },[]);
+
   return (
     <>
       <ChakraProvider>
@@ -99,11 +95,12 @@ function App() {
               <LinkDetails linkDetails={linkDetails} /> : 
               <LinkDetails linkDetails={null} />
             }
-          <FilterBox nodeRange={[minNodeRange, maxNodeRange]} linkRange={[minLinkRange, maxNodeRange]} onChangeLinkRange={handleLinkRange} onChangeInterval={handleNodeRangeSlider}/>
+            <FilterBox title="Filter First Graph" linkRange={[minLinkRange, maxLinkRange]} onChangeLinkRange={handleLinkRange1}/>
+            <FilterBox title="Filter Second Graph" linkRange={[minLinkRange, maxLinkRange]} onChangeLinkRange={handleLinkRange2}/>
           </Flex>
           <Flex flex={9} flexDir={'column'} justifyContent={'space-around'}>
-            <NetworkGraph data={graphData1} highlightedNode={highlightedNode} hoverLink={handleLinkHover} hoverNode={handleNodeHover} clickNode={handleNodeClick} nodeInterval={nodeInterval} linkInterval={linkInterval}/>
-            <NetworkGraph data={graphData2} highlightedNode={highlightedNode} hoverNode={handleNodeHover} clickNode={handleNodeClick} hoverLink={handleLinkHover} nodeInterval={nodeInterval} linkInterval={linkInterval}/>
+            <NetworkGraph data={graphData1} highlightedNode={highlightedNode} hoverLink={handleLinkHover} hoverNode={handleNodeHover} clickNode={handleNodeClick} linkInterval={linkInterval1}/>
+            <NetworkGraph data={graphData2} highlightedNode={highlightedNode} hoverNode={handleNodeHover} clickNode={handleNodeClick} hoverLink={handleLinkHover} linkInterval={linkInterval2}/>
           </Flex>
         </Flex>
       </ChakraProvider>

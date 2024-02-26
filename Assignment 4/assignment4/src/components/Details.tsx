@@ -43,10 +43,19 @@ export const LinkDetails = ({ linkDetails }: LinkDetailsProps) => {
         return (
             <Center display={"flex"} flexDir={"column"} m={1} p={2} borderColor={"black"} border={2} borderRadius={5} borderStyle={"solid"}>
                 <Text>Link Details: </Text>
-                <Flex flexDir={"row"} alignItems={"space-around"}>
-                    <Text>{`Source: ${source.name}`}</Text>
-                    <Text>{`Target: ${target.name}`}</Text>
-                    <Text>{`Value: ${value}`}</Text>
+                <Flex width="100%" justifyContent={"space-evenly"}>
+                    <Flex w={"33%"} flexDir={"column"}>
+                        <Text>Source: </Text>
+                        <Text>{source.name}</Text>
+                    </Flex>
+                    <Flex w={"33%"}  flexDir={"column"}>
+                        <Text>Target: </Text>
+                        <Text>{target.name}</Text>
+                    </Flex>
+                    <Flex w={"33%"}  flexDir={"column"}>
+                        <Text>Value: </Text>
+                        <Text>{value}</Text>
+                    </Flex>
                 </Flex>
             </Center>
         )

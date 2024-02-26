@@ -1,7 +1,7 @@
-import { Dispatch, SetStateAction, forwardRef, useCallback, useEffect, useRef, MutableRefObject, memo, useState } from 'react';
-import { Episode, Link, Node, NodeType } from '../types/types';
-import { ForceGraph2D, } from 'react-force-graph';
-import { Box } from '@chakra-ui/react';
+import {memo, useCallback, useEffect, useRef, useState} from 'react';
+import {Link, Node, NodeType} from '../types/types';
+import {ForceGraph2D,} from 'react-force-graph';
+import {Box} from '@chakra-ui/react';
 
 
 type NetworkGraphProps = {
@@ -10,11 +10,10 @@ type NetworkGraphProps = {
     clickNode: (node: NodeType) => void,
     hoverNode: (node: Node | null) => void,
     hoverLink: (link: Link | null) => void,
-    nodeInterval: number[],
     linkInterval: number[],
 }
 
-const NetworkGraph = ({ data, highlightedNode, hoverNode, clickNode, hoverLink, nodeInterval, linkInterval }: NetworkGraphProps) => {
+const NetworkGraph = ({ data, highlightedNode, hoverNode, clickNode, hoverLink, linkInterval }: NetworkGraphProps) => {
     const graphRef = useRef<any>();
 
 
@@ -39,15 +38,20 @@ const NetworkGraph = ({ data, highlightedNode, hoverNode, clickNode, hoverLink, 
     const [filteredData, setFilteredData] = useState(data);
 
     useEffect(() => {
-        const filteredNodes = data.nodes.filter((node) => node.value >= nodeInterval[0] && node.value <= nodeInterval[1]);
-        setFilteredData({ ...data, nodes: filteredNodes });
-    }, [data, nodeInterval]);
+        const filteredLinks = data.links.filter((link) => link.value >= linkInterval[0] && link.value <= linkInterval[1]);
+        console.log(filteredLinks)
+        // Extract node IDs from the filtered links
+        const connectedNodeIds = new Set(filteredLinks.flatMap(({source, target}: {source: any, target: any})   => {
+            if(typeof source === "number") return [source, target]
+            return [source.id, target.id]
+        }
 
-    useEffect(() => {
-        const filteredLinks = data.links.filter((link) => link.value >= linkInterval[0] && link.value <= linkInterval[1])
-        const filteredNodes = data.nodes.filter()
-        setFilteredData({...data, links: filteredLinks});
-    },[data, linkInterval]);
+        ));
+        // Filter nodes to only include those connected to the filtered links
+        const filteredNodes = data.nodes.filter((node) => connectedNodeIds.has(Number(node.id)));
+
+        setFilteredData({...data, nodes: filteredNodes, links: filteredLinks});
+    }, [data, linkInterval]);
 
     useEffect(() => {
         if (graphRef.current) {
@@ -57,8 +61,6 @@ const NetworkGraph = ({ data, highlightedNode, hoverNode, clickNode, hoverLink, 
 
     useEffect(() => {}, [highlightedNode]);
 
-
-
     return (
         <Box border={2} borderRadius={5} borderStyle={'solid'}>
             <ForceGraph2D
@@ -66,15 +68,11 @@ const NetworkGraph = ({ data, highlightedNode, hoverNode, clickNode, hoverLink, 
                 width={2 * (innerWidth / 3)}
                 height={400}
                 graphData={filteredData}
-                nodeRelSize={2}
-                nodeColor={(node: NodeType) => node.colour}
-                nodeVal={(node: NodeType) => node.value}
                 linkWidth={(link: Link) => link.value}
                 onNodeClick={clickNode}
                 onNodeHover={hoverNode}
                 nodeCanvasObject={paintRing}
                 onLinkHover={hoverLink}
-                
             />
         </Box>
     );
