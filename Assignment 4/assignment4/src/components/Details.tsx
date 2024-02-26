@@ -1,8 +1,5 @@
-import { Box, Center, Flex, Spacer, Text } from "@chakra-ui/react";
-import { Link, Node } from "../types/types";
-import { useEffect, useState } from "react";
-
-
+import {Center, Flex, Text} from "@chakra-ui/react";
+import {Node} from "../types/types";
 
 
 type NodeDetailsProps = {
